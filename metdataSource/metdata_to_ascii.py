@@ -37,11 +37,11 @@ for year in os.listdir(gridDir):
                 asciiRas = arcpy.RasterToASCII_conversion(convertRas,os.path.join(asciiSub,asciiName))
             elif v == 'tx':
                 asciiName = 'tmax_%s.asc'%dtdate.strftime('%Y_%m_%d')
-                convertRas = Raster(ras)*9/5+32
+                convertRas = Raster(ras)*9/5-459.67
                 asciiRas = arcpy.RasterToASCII_conversion(convertRas,os.path.join(asciiSub,asciiName))
             elif v == 'tn':
                 asciiName = 'tmin_%s.asc'%dtdate.strftime('%Y_%m_%d')
-                convertRas = Raster(ras)*9/5+32
+                convertRas = Raster(ras)*9/5-459.67
                 asciiRas = arcpy.RasterToASCII_conversion(convertRas,os.path.join(asciiSub,asciiName))
             else: 
                 arcpy.AddMessage("must be a bad name er sumthin...")

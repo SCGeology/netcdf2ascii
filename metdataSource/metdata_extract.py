@@ -35,7 +35,7 @@ else:
     arcpy.AddMessage("All Bands")
        
         
-#Get cell size, set environments 
+#Get cell size, used to set environments 
 cellx = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEX")
 celly = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEY")
 arcpy.AddMessage("Resample cell size X,Y: %s, %s" %(cellx,celly))
