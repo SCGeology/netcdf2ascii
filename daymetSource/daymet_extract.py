@@ -85,8 +85,9 @@ for v in variables:
             #extract all the bands of netCDF to raster layers, copy those layers to raster datasets
             if bands == 'ALL':
                 begBand = 0
-                if year in leapYears:
+                if int(year) in leapYears:
                     endBand = 366
+                    arcpy.AddMessage(year + " is leap year.")
                 else:
                     endBand = 365    
             
