@@ -35,7 +35,7 @@ else:
     arcpy.AddMessage("All Bands")
        
         
-#Get cell size, used to set environments 
+#Get cell size, set environments 
 cellx = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEX")
 celly = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEY")
 arcpy.AddMessage("Resample cell size X,Y: %s, %s" %(cellx,celly))
@@ -85,10 +85,11 @@ for v in variables:
             #extract all the bands of netCDF to raster layers, copy those layers to raster datasets
             if bands == 'ALL':
                 begBand = 0
-                if year in leapYears:
+                if int(year) in leapYears:
                     endBand = 366
+                    arcpy.AddMessage(year + " is leap year.")
                 else:
-                    endBand = 365    
+                    endBand = 365 
             
             for band in range (begBand,endBand):
                 
