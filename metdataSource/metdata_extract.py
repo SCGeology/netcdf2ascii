@@ -13,11 +13,14 @@ variableInputs = arcpy.GetParameterAsText(2)
 #Clip polygon
 clipper = arcpy.GetParameterAsText(3)
 
-#choose snap raster and cell size environments
-snapRas = arcpy.GetParameterAsText(4)
-
 #can specify the band range
-bands = arcpy.GetParameterAsText(5)
+bands = arcpy.GetParameterAsText(4)
+
+#want to use snap env?
+snapEnv = arcpy.GetParameterAsText(5)
+
+#choose snap raster and cell size environments
+snapRas = arcpy.GetParameterAsText(6)
 
 #kill script function
 def die():  
@@ -35,11 +38,21 @@ else:
     arcpy.AddMessage("All Bands")
        
         
-#Get cell size, set environments 
-cellx = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEX")
-celly = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEY")
-arcpy.AddMessage("Resample cell size X,Y: %s, %s" %(cellx,celly))
-            
+if snapEnv == "true":
+         
+    #Get cell size, set environments 
+    cellx = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEX")
+    celly = arcpy.GetRasterProperties_management(snapRas,"CELLSIZEY")
+    arcpy.AddMessage("Resample cell size X,Y: %s, %s" %(cellx,celly))
+    
+else:
+    
+    #set to default values
+    cellx = "#"
+    celly = "#"
+    arcpy.AddMessage("Not using snap/cell size environments. Cell size will remain the same as input")   
+        
+        
 #split the variables, add to variables list
 variables = []
 for v in variableInputs.split(';'):
@@ -101,23 +114,32 @@ for v in variables:
                     var = v
                 
                 julianDay = str(band+1)
-                varRasPath = varDir + "/" + var + "_" + year + "_" + julianDay + "c"
+
+                if snapEnv == "true":
+                    varRasPath = varDir + "/" + var + "_" + year + "_" + julianDay + "c"
+                else:
+                    varRasPath = varDir + "/" + var + "_" + year + "_" + julianDay
+                    
                 rasLayer = arcpy.MakeRasterLayer_management(netCDF, str(netCDF)+julianDay,"#","#",julianDay)
                     
                 arcpy.env.outputCoordinateSystem = clipper
-                arcpy.env.snapRaster = snapRas
                 
                 newRas = arcpy.Clip_management(rasLayer,"#",varRasPath,clipper,"#","NONE")
+                
                 if int(julianDay) % 10 == 0:
                     arcpy.AddMessage("Day: " + julianDay + " of year: " + year + " for variable: " + v + ".")
-                    
-                resRas = varDir + "/" + var + "_" + year + "_" + julianDay + "r"
-                arcpy.Resample_management(newRas,resRas,cellx,"NEAREST")
-                finRas = arcpy.sa.ExtractByMask(resRas,snapRas)
-                finalRas = varDir + "/" + var + "_" + year + "_" + julianDay
-                finRas.save(finalRas)
                 
+                #if the snapEnv setting is true, then resample the rasters and save final raster
+                if snapEnv == "true":
+                    arcpy.env.snapRaster = snapRas    
+                    resRas = varDir + "/" + var + "_" + year + "_" + julianDay + "r"
+                    arcpy.Resample_management(newRas,resRas,cellx,"NEAREST")
+                    finRas = arcpy.sa.ExtractByMask(resRas,snapRas)
+                    finalRas = varDir + "/" + var + "_" + year + "_" + julianDay
+                    finRas.save(finalRas)
+                    #delete the rasters that are not resampled. 
+                    arcpy.Delete_management(newRas)
+                    arcpy.Delete_management(resRas)
+                #if false, just save the final raster based on the split and clip    
+
                 
-                #delete the rasters that are not resampled. 
-                arcpy.Delete_management(newRas)
-                arcpy.Delete_management(resRas)
