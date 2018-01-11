@@ -7,4 +7,4 @@ Two separate scripts were developed, one for MetData source and one for Daymet s
 
 You can download the toolboxes (along with scripts and folder structure) with the .7z files. 
 
-The wiki for this project show the tool help generated in ArcGIS. It can give you context while you look at the code. 
+[The wiki for this project](https://github.com/SCGeology/netcdf2ascii/wiki/Convert-NetCDF-to-ASCII) shows the tool help generated in ArcGIS. It can give you context while you look at the code. 
